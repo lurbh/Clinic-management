@@ -1,0 +1,39 @@
+{{#extends "base"}}
+
+{{#block "title"}}
+Clinics
+{{/block}}
+
+
+{{#block "content"}}
+<h2>Clinics</h2>
+<div class="table-responsive">
+    <table class="table table-striped table-dark table-hover align-middle">
+        <thead>
+            <th>Clinic Name</th>
+            <th>Address</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Schedule</th>
+            <th></th>
+            <th></th>
+        </thead>
+        <tbody>
+            {{#each clinics}}
+            <tr>
+                <td>{{this.name}}</td>
+                <td>{{this.block}} {{this.road}} #{{this.unit}} ({{this.postal_code}})</td>
+                <td>{{this.phone}}</td>
+                <td>{{this.email}}</td>
+                <td><a href="/clinic/schedule/{{this.schedule_id}}" class="btn btn-light">View Schedule</a></td>
+                <td><a href="/clinic/edit/{{this.clinic_id}}" class="btn btn-warning">Edit</a></td>
+                <td><a href="/clinic/delete/{{this.clinic_id}}" class="btn btn-danger">Delete</a></td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+<a href="/clinic/create" class="btn btn-primary">Create Clinic</a>
+{{/block}}
+
+{{/extends}}

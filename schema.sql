@@ -4,7 +4,7 @@ USE Clinic_Management;
 
 CREATE TABLE Patient
 (
-  patient_id INT UNSIGNED NOT NULL,
+  patient_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   phone VARCHAR(255) NOT NULL,
   PRIMARY KEY (patient_id)
@@ -12,35 +12,35 @@ CREATE TABLE Patient
 
 CREATE TABLE Schedule
 (
-  schedule_id INT UNSIGNED NOT NULL,
+  schedule_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   weekday_start TIME NOT NULL,
   weekday_end TIME NOT NULL,
-  saturday_start TIME NOT NULL,
-  saturday_end TIME NOT NULL,
-  sunday_start TIME NOT NULL,
-  sunday_end TIME NOT NULL,
-  public_holiday_end TIME NOT NULL,
-  public_holiday_start TIME NOT NULL,
+  saturday_start TIME,
+  saturday_end TIME,
+  sunday_start TIME,
+  sunday_end TIME,
+  public_holiday_end TIME,
+  public_holiday_start TIME,
   PRIMARY KEY (schedule_id)
 );
 
 CREATE TABLE Specialty
 (
-  specialty_id INT UNSIGNED NOT NULL,
+  specialty_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   PRIMARY KEY (specialty_id)
 );
 
 CREATE TABLE Appointment_Type
 (
-  appt_type_id INT UNSIGNED NOT NULL,
+  appt_type_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   PRIMARY KEY (appt_type_id)
 );
 
 CREATE TABLE Clinic
 (
-  clinic_id INT UNSIGNED NOT NULL,
+  clinic_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   block VARCHAR(15) NOT NULL,
   road VARCHAR(255) NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE Clinic
 
 CREATE TABLE Doctor
 (
-  doctor_id INT UNSIGNED NOT NULL,
+  doctor_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   clinic_id INT UNSIGNED NOT NULL,
   PRIMARY KEY (doctor_id),
@@ -64,7 +64,7 @@ CREATE TABLE Doctor
 
 CREATE TABLE Appointment
 (
-  appointment_id INT UNSIGNED NOT NULL,
+  appointment_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   datetime DATETIME NOT NULL,
   patient_id INT UNSIGNED NOT NULL,
   doctor_id INT UNSIGNED NOT NULL,

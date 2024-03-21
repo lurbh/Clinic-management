@@ -1,0 +1,101 @@
+{{#extends "base"}}
+
+{{#block "title"}}
+Edit Clinic
+{{/block}}
+
+
+{{#block "content"}}
+<h2>Edit Clinic</h2>
+<form method="post">
+    <div>
+        <label>Clinic Name:</label>
+        <input type="text" class="form-control" name="name">
+    </div>
+    <div>
+        <label>Address:</label>
+        <div>
+            <div>
+                <label>Block:</label>
+                <input type="text" class="form-control" name="block">
+            </div>
+            <div>
+                <label>Road:</label>
+                <input type="text" class="form-control" name="road">
+            </div>
+            <div>
+                <label>Unit:</label>
+                <input type="text" class="form-control" name="unit">
+            </div>
+            <div>
+                <label>Postal Code:</label>
+                <input type="text" class="form-control" name="postal_code">
+            </div>
+        </div>
+    </div>
+    <div>
+        <label>Phone Number:</label>
+        <input type="text" class="form-control" name="phone">
+    </div>
+    <div>
+        <label>E-Mail:</label>
+        <input type="text" class="form-control" name="email">
+    </div>
+    <div>
+        <label>Schedule:</label>
+        <div>
+            <div>
+                <label>Weekday:</label>
+                <div class="row">
+                    <div class="col">
+                        <input type="time" class="form-control" name="weekday_start">
+                    </div>
+                    -
+                    <div class="col">
+                        <input type="time" class="form-control" name="weekday_end">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label>Saturday:</label>
+                <div class="row">
+                    <div class="col">
+                        <input type="time" class="form-control" name="saturday_start">
+                    </div>
+                    -
+                    <div class="col">
+                        <input type="time" class="form-control" name="saturday_end">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label>Sunday:</label>
+                <div class="row">
+                    <div class="col">
+                        <input type="time" class="form-control" name="sunday_start">
+                    </div>
+                    -
+                    <div class="col">
+                        <input type="time" class="form-control" name="sunday_end">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label>Public Holiday:</label>
+                <div class="row">
+                    <div class="col">
+                        <input type="time" class="form-control" name="public_holiday_start">
+                    </div>
+                    -
+                    <div class="col">
+                        <input type="time" class="form-control" name="public_holiday_end">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="submit" value="Create Clinic" class="btn btn-primary my-4">
+</form>
+{{/block}}
+
+{{/extends}}

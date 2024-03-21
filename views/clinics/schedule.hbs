@@ -1,0 +1,21 @@
+{{#extends "base"}}
+
+{{#block "title"}}
+Clinic Schedule
+{{/block}}
+
+
+{{#block "content"}}
+<h2>Clinic Schedule</h2>
+<h4>Clinic Name: {{clinic.name}}</h4>
+<p>Monday - Friday: {{clinic.weekday_start}} - {{clinic.weekday_end}}</p>
+<p>Saturday: {{clinic.saturday_start}} - {{clinic.saturday_end}}</p>
+<p>Sunday: {{clinic.sunday_start}} - {{clinic.sunday_end}}</p>
+<p>Public Holidays: {{clinic.public_holiday_start}} - {{clinic.public_holiday_end}}</p>
+{{/block}}
+
+{{#block "scripts"}}
+<script src="scripts/helperfunctions.js"></script>
+{{/block}}
+
+{{/extends}}
