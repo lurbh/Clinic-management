@@ -22,7 +22,6 @@ const port = 6565;
 
 function setAMPMTime(time)
 {
-    console.log(time);
     let timeofday = " am";
     const stime = time.split(":");
     if(stime[0] >= 12)
@@ -97,8 +96,75 @@ async function main()
 
     app.get('/clinic/edit/:clinic_id', async function(req,res)
     {
-        // const 
-        res.render('clinics/edit');
+        const {clinic_id} = req.params;
+        const [clinics] = await connection.execute(`SELECT * FROM Clinic INNER JOIN Schedule 
+            ON Clinic.schedule_id = Schedule.schedule_id WHERE Clinic.clinic_id=?;`, [clinic_id]); 
+        const clinic = clinics[0];
+        res.render('clinics/edit',{
+            clinic
+        });
+    });
+
+    app.post('/clinic/edit/:clinic_id', async function(req,res)
+    {
+        const {clinic_id} = req.params;
+        const {name,block,road,unit,postal_code,phone,email} = req.body;
+        const {weekday_start,weekday_end,saturday_start,saturday_end,sunday_start,sunday_end,public_holiday_start,public_holiday_end} = req.body;
+        const [clinics] = await connection.execute(`SELECT * FROM Clinic INNER JOIN Schedule 
+            ON Clinic.schedule_id = Schedule.schedule_id WHERE Clinic.clinic_id=?;`, [clinic_id]); 
+        const clinic = clinics[0];
+        const schedule_id = clinic.schedule_id;
+        const Schedulequery = `UPDATE Schedule SET
+        weekday_start=?,
+        weekday_end=?,
+        saturday_start=?,
+        saturday_end=?,
+        sunday_start=?,
+        sunday_end=?,
+        public_holiday_start=?,
+        public_holiday_end=?
+        WHERE schedule_id=?;`
+        const [response] = await connection.execute(Schedulequery, [weekday_start, weekday_end, saturday_start, saturday_end, sunday_start, sunday_end, public_holiday_start, public_holiday_end, schedule_id]);
+        insertedID = response.insertId;
+        const clinicquery = `UPDATE Clinic SET
+        name=?,
+        block=?,
+        road=?,
+        unit=?,
+        postal_code=?,
+        phone=?,
+        email=?
+        WHERE clinic_id=?;`;
+        await connection.execute(clinicquery,[name,block,road,unit,postal_code,phone,email,clinic_id]);
+        res.redirect('/clinic');
+    });
+
+    app.get('/clinic/delete/:clinic_id', async function (req,res) 
+    {
+        const clinic_id = req.params.clinic_id;
+        let query = `SELECT * FROM Clinic WHERE clinic_id = ?;`;
+        let [clinics] = await connection.execute(query,[clinic_id]);
+        const clinicToDelete = clinics[0];
+        res.render('clinics/delete', {
+            'clinic' : clinicToDelete
+        })
+    });
+
+    app.post('/clinic/delete/:clinic_id', async function (req,res) 
+    {
+        const clinic_id = req.params.clinic_id;
+
+        // check if the clinic_id in a relationship with an Doctor
+        const checkDoctorQuery = `SELECT * FROM Doctor WHERE clinic_id = ?`;
+        const [involved] = await connection.execute(checkDoctorQuery,[clinic_id]);
+        if (involved.length > 0) {
+            res.send("Unable to delete because the Clinic as doctor is still attached to the clinic");
+            return;
+        }
+
+        let query = `DELETE FROM Clinic WHERE clinic_id = ?;`;
+        await connection.execute(query,[clinic_id]);
+        res.redirect('/clinic');
     });
 
     app.listen(port, function()

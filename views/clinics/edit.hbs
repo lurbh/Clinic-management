@@ -10,36 +10,36 @@ Edit Clinic
 <form method="post">
     <div>
         <label>Clinic Name:</label>
-        <input type="text" class="form-control" name="name">
+        <input type="text" class="form-control" name="name" value="{{clinic.name}}">
     </div>
     <div>
         <label>Address:</label>
         <div>
             <div>
                 <label>Block:</label>
-                <input type="text" class="form-control" name="block">
+                <input type="text" class="form-control" name="block" value="{{clinic.block}}">
             </div>
             <div>
                 <label>Road:</label>
-                <input type="text" class="form-control" name="road">
+                <input type="text" class="form-control" name="road" value="{{clinic.road}}">
             </div>
             <div>
                 <label>Unit:</label>
-                <input type="text" class="form-control" name="unit">
+                <input type="text" class="form-control" name="unit" value="{{clinic.unit}}">
             </div>
             <div>
                 <label>Postal Code:</label>
-                <input type="text" class="form-control" name="postal_code">
+                <input type="text" class="form-control" name="postal_code" value="{{clinic.postal_code}}">
             </div>
         </div>
     </div>
     <div>
         <label>Phone Number:</label>
-        <input type="text" class="form-control" name="phone">
+        <input type="text" class="form-control" name="phone" value="{{clinic.phone}}">
     </div>
     <div>
         <label>E-Mail:</label>
-        <input type="text" class="form-control" name="email">
+        <input type="text" class="form-control" name="email" value="{{clinic.email}}">
     </div>
     <div>
         <label>Schedule:</label>
@@ -48,11 +48,11 @@ Edit Clinic
                 <label>Weekday:</label>
                 <div class="row">
                     <div class="col">
-                        <input type="time" class="form-control" name="weekday_start">
+                        <input type="time" class="form-control" name="weekday_start" value="{{clinic.weekday_start}}">
                     </div>
                     -
                     <div class="col">
-                        <input type="time" class="form-control" name="weekday_end">
+                        <input type="time" class="form-control" name="weekday_end" value="{{clinic.weekday_end}}">
                     </div>
                 </div>
             </div>
@@ -60,11 +60,11 @@ Edit Clinic
                 <label>Saturday:</label>
                 <div class="row">
                     <div class="col">
-                        <input type="time" class="form-control" name="saturday_start">
+                        <input type="time" class="form-control" name="saturday_start" value="{{clinic.saturday_start}}">
                     </div>
                     -
                     <div class="col">
-                        <input type="time" class="form-control" name="saturday_end">
+                        <input type="time" class="form-control" name="saturday_end" value="{{clinic.saturday_end}}">
                     </div>
                 </div>
             </div>
@@ -72,11 +72,11 @@ Edit Clinic
                 <label>Sunday:</label>
                 <div class="row">
                     <div class="col">
-                        <input type="time" class="form-control" name="sunday_start">
+                        <input type="time" class="form-control" name="sunday_start" value="{{clinic.sunday_start}}">
                     </div>
                     -
                     <div class="col">
-                        <input type="time" class="form-control" name="sunday_end">
+                        <input type="time" class="form-control" name="sunday_end" value="{{clinic.sunday_end}}">
                     </div>
                 </div>
             </div>
@@ -84,17 +84,18 @@ Edit Clinic
                 <label>Public Holiday:</label>
                 <div class="row">
                     <div class="col">
-                        <input type="time" class="form-control" name="public_holiday_start">
+                        <input type="time" class="form-control" name="public_holiday_start" value="{{clinic.public_holiday_start}}">
                     </div>
                     -
                     <div class="col">
-                        <input type="time" class="form-control" name="public_holiday_end">
+                        <input type="time" class="form-control" name="public_holiday_end" value="{{clinic.public_holiday_end}}">
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <input type="submit" value="Create Clinic" class="btn btn-primary my-4">
+    <a href="/clinic" class="btn btn-warning">Cancel</a>
+    <input type="submit" value="Edit Clinic" class="btn btn-primary my-4">
 </form>
 {{/block}}
 
