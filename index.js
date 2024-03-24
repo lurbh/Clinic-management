@@ -2,6 +2,7 @@ const express = require('express');
 const hbs = require('hbs');
 const waxOn = require('wax-on');
 const {createConnection} = require('mysql2/promise');
+const res = require('express/lib/response');
 require('dotenv').config();
 
 let app = express();
@@ -28,8 +29,14 @@ function setAMPMTime(time)
     {
         timeofday = " pm"
         if(stime[0] != 12)
+        {
             stime[0] -= 12;
+            if(stime[0] < 10)
+                stime[0] = "0" + stime[0];
+        }
+        
     }
+    
     const newtimestring = stime.join(":").concat(timeofday);
     return newtimestring;
 }
@@ -165,6 +172,96 @@ async function main()
         let query = `DELETE FROM Clinic WHERE clinic_id = ?;`;
         await connection.execute(query,[clinic_id]);
         res.redirect('/clinic');
+    });
+
+    app.get("/appointments", async function (req,res){
+        const [appointments] = await connection.execute(`SELECT appointment_id,Patient.name AS P_name, Doctor.name AS D_name, Appointment_Type.name AS apt_name,
+        DATE(datetime) AS date,TIME(datetime) AS time FROM Appointment 
+        INNER JOIN Patient ON Appointment.patient_id = Patient.patient_id
+        INNER JOIN Doctor ON Appointment.doctor_id = Doctor.doctor_id
+        INNER JOIN Appointment_Type ON Appointment.appt_type_id = Appointment_Type.appt_type_id;`);
+        for(const apt of appointments)
+        {
+            apt.time = setAMPMTime(apt.time);
+            apt.date = apt.date.toISOString().substring(0, 10);
+        }
+        res.render("appointments/index", {
+            appointments
+        });
+    });
+
+    app.get("/appointments/create", async function (req,res){
+        const [patients] = await connection.execute(`SELECT * FROM Patient;`);
+        const [doctors] = await connection.execute(`SELECT * FROM Doctor;`);
+        const [appt_types] = await connection.execute(`SELECT * FROM Appointment_Type;`);
+
+        res.render("appointments/create", {
+            patients,
+            doctors,
+            appt_types
+        })
+    });
+
+    app.post("/appointments/create", async function (req,res){
+        const {patient_id,doctor_id,appt_type_id,date,time} = req.body;
+        const datetime = date + " " + time;
+        const query = `INSERT INTO Appointment (datetime, patient_id, doctor_id, appt_type_id) VALUES(?,?,?,?)`
+        const response = await connection.execute(query,[datetime,patient_id,doctor_id,appt_type_id]);
+        res.redirect('/appointments');
+    });
+
+    app.get("/appointments/edit/:appointment_id", async function (req,res){
+        const {appointment_id} = req.params;
+        const [patients] = await connection.execute(`SELECT * FROM Patient;`);
+        const [doctors] = await connection.execute(`SELECT * FROM Doctor;`);
+        const [appt_types] = await connection.execute(`SELECT * FROM Appointment_Type;`);
+        const [appointments] = await connection.execute(`SELECT *, DATE(datetime) AS date,TIME(datetime) AS time FROM Appointment 
+        WHERE appointment_id=?;`,[appointment_id]);
+        const appointment = appointments[0];
+        appointment.date = appointment.date.toISOString().substring(0, 10);
+        res.render("appointments/edit", {
+            patients,
+            doctors,
+            appt_types,
+            appointment
+        })
+    });
+
+    app.post("/appointments/edit/:appointment_id", async function (req,res){
+        const {appointment_id} = req.params;
+        const {patient_id,doctor_id,appt_type_id,date,time} = req.body;
+        const datetime = date + " " + time;
+        const query = `UPDATE Appointment SET 
+        datetime=?, 
+        patient_id=?, 
+        doctor_id=?, 
+        appt_type_id=?
+        WHERE appointment_id=?`
+        const response = await connection.execute(query,[datetime,patient_id,doctor_id,appt_type_id,appointment_id]);
+        res.redirect('/appointments');
+    });
+
+    app.get("/appointments/delete/:appointment_id", async function (req,res){
+        const {appointment_id} = req.params;
+        const [appointments] = await connection.execute(`SELECT appointment_id,Patient.name AS P_name, Doctor.name AS D_name, Appointment_Type.name AS apt_name,
+        DATE(datetime) AS date,TIME(datetime) AS time FROM Appointment 
+        INNER JOIN Patient ON Appointment.patient_id = Patient.patient_id
+        INNER JOIN Doctor ON Appointment.doctor_id = Doctor.doctor_id
+        INNER JOIN Appointment_Type ON Appointment.appt_type_id = Appointment_Type.appt_type_id 
+        WHERE appointment_id=?;`,[appointment_id]);
+        const appointment = appointments[0];
+        appointment.date = appointment.date.toISOString().substring(0, 10);
+        appointment.time = setAMPMTime(appointment.time);
+        res.render('appointments/delete',{
+            appointment
+        })
+    });
+
+    app.post("/appointments/delete/:appointment_id", async function (req,res){
+        const {appointment_id} = req.params;
+        const query = `DELETE FROM Appointment WHERE appointment_id=?`;
+        const response = await connection.execute(query, [appointment_id]);
+        res.redirect('/appointments');
     });
 
     app.listen(port, function()

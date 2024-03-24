@@ -1,0 +1,14 @@
+{{#extends "base"}}
+{{#block "content"}}
+<h2>Delete Appointment</h2>
+<form method="post">
+    <div class="alert alert-danger">
+        Are you sre you want to delete Appointment for {{appointment.P_name}} with {{appointment.D_name}} on {{appointment.date}} at {{appointment.time}}
+    </div>  
+    <a href="/appointments" class="btn btn-primary">Cancel</a>
+    <input type="submit" class="btn btn-danger" value="Delete Appointment">
+</form>
+
+{{/block}}
+
+{{/extends}}

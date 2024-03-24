@@ -1,0 +1,55 @@
+{{#extends "base"}}
+
+{{#block "title"}}
+Edit Appointment
+{{/block}}
+
+
+{{#block "content"}}
+<h2>Edit Appointment</h2>
+<form method="post">
+    <div>
+        <label>Patient:</label>
+        <select class="form-select" aria-label="Select Patient" name="patient_id" >
+            {{#each patients}}
+                <option value="{{this.patient_id}}"
+                {{#eq this.patient_id ../appointment.patient_id}}selected{{/eq}}>
+                {{this.name}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <div>
+        <label>Doctor:</label>
+        <select class="form-select" aria-label="Select Doctor" name="doctor_id">
+            {{#each doctors}}
+                <option value="{{this.doctor_id}}"
+                {{#eq this.doctor_id ../appointment.doctor_id}}selected{{/eq}}>
+                {{this.name}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <div>
+        <label>Appointment Type:</label>
+        <select class="form-select" aria-label="Select Appointment Type" name="appt_type_id">
+            {{#each appt_types}}
+                <option value="{{this.appt_type_id}}"
+                {{#eq this.appt_type_id ../appointment.appt_type_id}}selected{{/eq}}>
+                {{this.name}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <div>
+        <label>Date: </label>
+        <input type="date" class="form-select" name="date" value="{{appointment.date}}"/>
+    </div>
+    <div>
+        <label>Time:</label>
+        <input type="time" class="form-select" name="time" value="{{appointment.time}}"/>
+    </div>
+    
+    <a href="/appointments" class="btn btn-warning">Cancel</a>
+    <input type="submit" value="Edit Appointment" class="btn btn-primary my-4">
+</form>
+{{/block}}
+
+{{/extends}}
