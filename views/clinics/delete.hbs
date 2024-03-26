@@ -1,11 +1,16 @@
 {{#extends "base"}}
+
+{{#block "title"}}
+Delete Clinic
+{{/block}}
+
 {{#block "content"}}
 <h2>Delete Clinic</h2>
 <form method="post">
     <div class="alert alert-danger">
         Are you sre you want to delete Clinic {{clinic.name}}
     </div>  
-    <a href="/clinic" class="btn btn-primary">Cancel</a>
+    <a href="/clinics" class="btn btn-primary">Cancel</a>
     <input type="submit" class="btn btn-danger" value="Delete Clinic">
 </form>
 

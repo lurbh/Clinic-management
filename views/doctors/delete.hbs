@@ -1,0 +1,14 @@
+{{#extends "base"}}
+{{#block "content"}}
+<h2>Delete Doctor</h2>
+<form method="post">
+    <div class="alert alert-danger">
+        Are you sre you want to delete Doctor for {{doctor.name}} at {{doctor.C_name}}
+    </div>  
+    <a href="/doctors" class="btn btn-primary">Cancel</a>
+    <input type="submit" class="btn btn-danger" value="Delete Doctor">
+</form>
+
+{{/block}}
+
+{{/extends}}

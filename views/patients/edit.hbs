@@ -1,0 +1,29 @@
+{{#extends "base"}}
+
+{{#block "title"}}
+Edit Patient
+{{/block}}
+
+
+{{#block "content"}}
+<h2>Edit Patient</h2>
+<form method="post">
+    <div>
+        <label>Patient Name:</label>
+        <input type="text" name="name" id="name" class="form-control" value="{{patient.name}}">
+    </div>
+    <div>
+        <label>Phone Number:</label>
+        <input type="text" name="phone" id="phone" class="form-control" value="{{patient.phone}}">
+    </div>
+    <div>
+        <label>E-Mail:</label>
+        <input type="text" name="email" id="email" class="form-control" value="{{patient.email}}">
+    </div>
+    
+    <a href="/patients" class="btn btn-warning">Cancel</a>
+    <input type="submit" value="Edit Patient" class="btn btn-primary my-4">
+</form>
+{{/block}}
+
+{{/extends}}

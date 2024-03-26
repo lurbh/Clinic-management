@@ -1,0 +1,34 @@
+{{#extends "base"}}
+
+{{#block "title"}}
+Doctors
+{{/block}}
+
+
+{{#block "content"}}
+<h2>Doctors</h2>
+<div class="table-responsive">
+    <table class="table table-striped table-dark table-hover align-middle">
+        <thead>
+            <th>Doctor Name</th>
+            <th>Clinic</th>
+            <th></th>
+            <th></th>
+        </thead>
+        <tbody>
+            {{#each doctors}}
+            <tr>
+                <td>{{this.D_name}}</td>
+                <td>{{this.C_name}}</td>
+                <td><a href="/doctors/edit/{{this.doctor_id}}" class="btn btn-warning">Edit</a></td>
+                <td><a href="/doctors/delete/{{this.doctor_id}}" class="btn btn-danger">Delete</a></td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+<a href="/doctors/create" class="btn btn-primary">Create Doctor</a>
+<a href="/doctors/specialty" class="btn btn-primary">Create Specialty</a>
+{{/block}}
+
+{{/extends}}

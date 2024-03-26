@@ -1,0 +1,37 @@
+{{#extends "base"}}
+
+{{#block "title"}}
+Edit Doctor
+{{/block}}
+
+
+{{#block "content"}}
+<h2>Edit Doctor</h2>
+<form method="post">
+    <div>
+        <label>Doctor Name:</label>
+        <input type="text" name="name" id="name" class="form-control" value="{{doctor.name}}">
+    </div>
+    <div>
+        <label>Clinic:</label>
+        <select class="form-select" aria-label="Select Clinic" name="clinic_id">
+            {{#each clinics}}
+                <option value="{{this.clinic_id}}" {{#eq this.clinic_id ../doctor.clinic_id}}selected{{/eq}}>{{this.name}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <div>
+        <label>Specialties:</label>
+        <select class="form-select" aria-label="Select Specialties" name="specialty" multiple>
+            {{#each specialties}}
+                <option value="{{this.specialty_id}}" {{#inArray ../specialtyIds this.specialty_id}}selected{{/inArray}}>{{this.name}}</option>
+            {{/each}}
+        </select>
+    </div>
+    
+    <a href="/doctors" class="btn btn-warning">Cancel</a>
+    <input type="submit" value="Edit Doctor" class="btn btn-primary my-4">
+</form>
+{{/block}}
+
+{{/extends}}

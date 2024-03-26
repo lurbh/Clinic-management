@@ -52,10 +52,10 @@ async function main()
 
     app.get('/', function(req,res) 
     {
-        res.send('Hello World');
+        res.render('index');
     });
 
-    app.get('/clinic', async function(req,res)
+    app.get('/clinics', async function(req,res)
     {
         let [clinics] = await connection.execute(`SELECT * FROM Clinic;`);
         res.render('clinics/index', {
@@ -63,7 +63,7 @@ async function main()
         });
     });
 
-    app.get('/clinic/schedule/:schedule_id', async function(req,res)
+    app.get('/clinics/schedule/:schedule_id', async function(req,res)
     {
         const {schedule_id} = req.params;
         const [clinics] = await connection.execute(`SELECT * FROM Clinic INNER JOIN Schedule 
@@ -82,12 +82,12 @@ async function main()
         });
     });
 
-    app.get('/clinic/create', async function(req,res)
+    app.get('/clinics/create', async function(req,res)
     {
         res.render('clinics/create');
     });
 
-    app.post('/clinic/create', async function(req,res)
+    app.post('/clinics/create', async function(req,res)
     {
         const {name,block,road,unit,postal_code,phone,email} = req.body;
         const {weekday_start,weekday_end,saturday_start,saturday_end,sunday_start,sunday_end,public_holiday_start,public_holiday_end} = req.body;
@@ -98,10 +98,10 @@ async function main()
         const clinicquery = `INSERT INTO Clinic (name, block, road, unit, postal_code, phone, email, schedule_id) 
         VALUES(?, ?, ?, ?, ?, ?, ?, ?);`;
         await connection.execute(clinicquery,[name,block,road,unit,postal_code,phone,email,insertedID]);
-        res.redirect('/clinic');
+        res.redirect('/clinics');
     });
 
-    app.get('/clinic/edit/:clinic_id', async function(req,res)
+    app.get('/clinics/edit/:clinic_id', async function(req,res)
     {
         const {clinic_id} = req.params;
         const [clinics] = await connection.execute(`SELECT * FROM Clinic INNER JOIN Schedule 
@@ -112,7 +112,7 @@ async function main()
         });
     });
 
-    app.post('/clinic/edit/:clinic_id', async function(req,res)
+    app.post('/clinics/edit/:clinic_id', async function(req,res)
     {
         const {clinic_id} = req.params;
         const {name,block,road,unit,postal_code,phone,email} = req.body;
@@ -143,10 +143,10 @@ async function main()
         email=?
         WHERE clinic_id=?;`;
         await connection.execute(clinicquery,[name,block,road,unit,postal_code,phone,email,clinic_id]);
-        res.redirect('/clinic');
+        res.redirect('/clinics');
     });
 
-    app.get('/clinic/delete/:clinic_id', async function (req,res) 
+    app.get('/clinics/delete/:clinic_id', async function (req,res) 
     {
         const clinic_id = req.params.clinic_id;
         let query = `SELECT * FROM Clinic WHERE clinic_id = ?;`;
@@ -157,7 +157,7 @@ async function main()
         })
     });
 
-    app.post('/clinic/delete/:clinic_id', async function (req,res) 
+    app.post('/clinics/delete/:clinic_id', async function (req,res) 
     {
         const clinic_id = req.params.clinic_id;
 
@@ -171,15 +171,16 @@ async function main()
 
         let query = `DELETE FROM Clinic WHERE clinic_id = ?;`;
         await connection.execute(query,[clinic_id]);
-        res.redirect('/clinic');
+        res.redirect('/clinics');
     });
 
     app.get("/appointments", async function (req,res){
-        const [appointments] = await connection.execute(`SELECT appointment_id,Patient.name AS P_name, Doctor.name AS D_name, Appointment_Type.name AS apt_name,
+        const [appointments] = await connection.execute(`SELECT appointment_id,Patient.name AS P_name, Doctor.name AS D_name, Appointment_Type.name AS apt_name, Clinic.name AS C_name,
         DATE(datetime) AS date,TIME(datetime) AS time FROM Appointment 
         INNER JOIN Patient ON Appointment.patient_id = Patient.patient_id
         INNER JOIN Doctor ON Appointment.doctor_id = Doctor.doctor_id
-        INNER JOIN Appointment_Type ON Appointment.appt_type_id = Appointment_Type.appt_type_id;`);
+        INNER JOIN Appointment_Type ON Appointment.appt_type_id = Appointment_Type.appt_type_id
+        INNER JOIN Clinic on Doctor.clinic_id = Clinic.clinic_id;`);
         for(const apt of appointments)
         {
             apt.time = setAMPMTime(apt.time);
@@ -262,6 +263,163 @@ async function main()
         const query = `DELETE FROM Appointment WHERE appointment_id=?`;
         const response = await connection.execute(query, [appointment_id]);
         res.redirect('/appointments');
+    });
+
+    app.get("/doctors", async function (req,res){
+        const [doctors] = await connection.execute(`SELECT Doctor.doctor_id, Doctor.name as D_name, Clinic.name AS C_name FROM Doctor 
+        INNER JOIN Clinic ON Doctor.clinic_id = Clinic.clinic_id
+        ORDER BY Clinic.clinic_id;`)
+        res.render("doctors/index", {
+            doctors
+        });
+    });
+
+    app.get("/doctors/specialty", async function (req,res){
+        res.render("doctors/specialty");
+    });
+
+    app.post("/doctors/specialty", async function (req,res){
+        const {name} = req.body;
+        const response = await connection.execute(`INSERT INTO Specialty (name) VALUES(?)`,[name]);
+        res.redirect("/doctors");
+    });
+
+    app.get("/doctors/create", async function (req,res){
+        const [clinics] = await connection.execute("SELECT * FROM Clinic");
+        const [specialties] = await connection.execute("SELECT * FROM Specialty");
+        res.render("doctors/create", {
+            clinics,
+            specialties
+        });
+    });
+
+    app.post("/doctors/create", async function (req,res){
+        const {name,clinic_id,specialty} = req.body;
+        let doctorquery = `INSERT INTO Doctor (name, clinic_id) VALUES(?, ?)`;
+        const [response] = await connection.execute(doctorquery,[name, clinic_id]);
+        const insertId = response.insertId;
+        let specialtyArray = [];
+        if(Array.isArray(specialty))
+            specialtyArray = specialty;
+        else
+            specialtyArray.push(specialty)
+        for (let sid of specialtyArray)
+        {
+            let specialtyquery = `INSERT INTO DoctorSpecialty (doctor_id, specialty_id) VALUES(?, ?)`
+            await connection.execute(specialtyquery, [insertId, sid])
+        }
+        res.redirect("/doctors");
+    });
+
+    app.get("/doctors/delete/:doctor_id", async function (req,res){
+        const {doctor_id} = req.params;
+        let query = `SELECT Doctor.*, Clinic.name as C_name FROM Doctor INNER JOIN Clinic ON Doctor.clinic_id = Clinic.clinic_id WHERE doctor_id = ?;`;
+        let [doctors] = await connection.execute(query,[doctor_id]);
+        const doctor = doctors[0];
+        res.render('doctors/delete', {
+            doctor
+        })
+    });
+
+    app.post("/doctors/delete/:doctor_id", async function (req,res){
+        const {doctor_id} = req.params;
+        await connection.execute("DELETE FROM DoctorSpecialty WHERE doctor_id = ?;",[doctor_id])
+        const query = `DELETE FROM Doctor WHERE doctor_id=?`;
+        await connection.execute(query, [doctor_id]);
+        res.redirect('/doctors');
+    });
+
+    app.get("/doctors/edit/:doctor_id", async function (req,res){
+        const {doctor_id} = req.params;
+        const [clinics] = await connection.execute("SELECT * FROM Clinic");
+        const [specialties] = await connection.execute("SELECT * FROM Specialty");
+        const [doctors] = await connection.execute("SELECT * FROM Doctor WHERE doctor_id=?;", [doctor_id]);
+        const [DoctorSpecialty] = await connection.execute("SELECT * FROM DoctorSpecialty WHERE doctor_id = ?;",[doctor_id])
+        const doctor = doctors[0];
+        const specialtyIds = [];
+        for (let ds of DoctorSpecialty) {
+            specialtyIds.push(ds.specialty_id)
+        }
+
+        res.render("doctors/edit", {
+            doctor,
+            clinics,
+            specialties,
+            specialtyIds
+        })
+    });
+
+    app.post("/doctors/edit/:doctor_id", async function (req,res){
+        const {doctor_id} = req.params;
+        const {name,clinic_id,specialty} = req.body;
+        let doctorquery = `UPDATE Doctor SET name=?, clinic_id=? WHERE doctor_id=?`;
+        const response = await connection.execute(doctorquery,[name, clinic_id, doctor_id]);
+        await connection.execute("DELETE FROM DoctorSpecialty WHERE doctor_id = ?;",[doctor_id])
+        let specialtyArray = [];
+        if(Array.isArray(specialty))
+            specialtyArray = specialty;
+        else
+            specialtyArray.push(specialty)
+        for (let sid of specialtyArray)
+        {
+            let specialtyquery = `INSERT INTO DoctorSpecialty (doctor_id, specialty_id) VALUES(?, ?)`
+            await connection.execute(specialtyquery, [doctor_id, sid])
+        }
+        res.redirect("/doctors")
+    });
+
+    app.get("/patients", async function (req,res){
+        const [patients] = await connection.execute(`SELECT * FROM Patient;`)
+        res.render("patients/index", {
+            patients
+        });
+    });
+
+    app.get("/patients/create", async function (req,res){
+        res.render("patients/create");
+    });
+
+    app.post("/patients/create", async function (req,res){
+        const {name,phone,email} = req.body;
+        let doctorquery = `INSERT INTO Patient (name, phone, email) VALUES(?, ?, ?)`;
+        const response = await connection.execute(doctorquery,[name, phone, email]);
+        res.redirect("/patients");
+    });
+
+    app.get("/patients/delete/:patient_id", async function (req,res){
+        const {patient_id} = req.params;
+        let query = `SELECT * FROM Patient WHERE patient_id = ?;`;
+        let [patients] = await connection.execute(query,[patient_id]);
+        const patient = patients[0];
+        res.render('patients/delete', {
+            patient
+        })
+    });
+
+    app.post("/patients/delete/:patient_id", async function (req,res){
+        const {patient_id} = req.params;
+        await connection.execute("DELETE FROM Appointment WHERE patient_id = ?;",[patient_id])
+        const query = `DELETE FROM Patient WHERE patient_id=?`;
+        await connection.execute(query, [patient_id]);
+        res.redirect('/patients');
+    });
+
+    app.get("/patients/edit/:patient_id", async function (req,res){
+        const {patient_id} = req.params;
+        const [patients] = await connection.execute("SELECT * FROM Patient WHERE patient_id=?;", [patient_id]);
+        const patient = patients[0];
+
+        res.render("patients/edit", {
+            patient
+        })
+    });
+
+    app.post("/patients/edit/:patient_id", async function (req,res){
+        const {patient_id} = req.params;
+        const {name,phone,email} = req.body;
+        let query = `UPDATE Patient SET name=?, phone=?, email=? WHERE patient_id=?`;
+        const response = await connection.execute(query,[name, phone, email, patient_id]);
+        res.redirect("/patients")
     });
 
     app.listen(port, function()

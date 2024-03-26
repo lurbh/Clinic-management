@@ -25,15 +25,15 @@ Clinics
                 <td>{{this.block}} {{this.road}} #{{this.unit}} ({{this.postal_code}})</td>
                 <td>{{this.phone}}</td>
                 <td>{{this.email}}</td>
-                <td><a href="/clinic/schedule/{{this.schedule_id}}" class="btn btn-light">View Schedule</a></td>
-                <td><a href="/clinic/edit/{{this.clinic_id}}" class="btn btn-warning">Edit</a></td>
-                <td><a href="/clinic/delete/{{this.clinic_id}}" class="btn btn-danger">Delete</a></td>
+                <td><a href="/clinics/schedule/{{this.schedule_id}}" class="btn btn-light">View Schedule</a></td>
+                <td><a href="/clinics/edit/{{this.clinic_id}}" class="btn btn-warning">Edit</a></td>
+                <td><a href="/clinics/delete/{{this.clinic_id}}" class="btn btn-danger">Delete</a></td>
             </tr>
             {{/each}}
         </tbody>
     </table>
 </div>
-<a href="/clinic/create" class="btn btn-primary">Create Clinic</a>
+<a href="/clinics/create" class="btn btn-primary">Create Clinic</a>
 {{/block}}
 
 {{/extends}}

@@ -25,12 +25,12 @@ INSERT INTO Doctor (name, clinic_id) VALUES
 ('Dr. Sarah Smith', 2);
 
 -- Inserting sample data into the Patient table
-INSERT INTO Patient (name, phone) VALUES
-('John Doe', '123-456-7890'),
-('Jane Smith', '987-654-3210'),
-('Michael Johnson', '555-123-4567'),
-('Emily Brown', '222-333-4444'),
-('Sarah Wilson', '777-888-9999');
+INSERT INTO Patient (name, phone, email) VALUES
+('John Doe', '123-456-7890', 'john.doe@example.com'),
+('Jane Smith', '987-654-3210', 'jane.smith@example.com'),
+('Michael Johnson', '555-123-4567', 'michael.johnson@example.com'),
+('Emily Brown', '222-333-4444', 'emily.brown@example.com'),
+('Sarah Wilson', '777-888-9999', 'sarah.wilson@example.com');
 
 -- Inserting sample data into the Appointment_Type table
 INSERT INTO Appointment_Type (name) VALUES

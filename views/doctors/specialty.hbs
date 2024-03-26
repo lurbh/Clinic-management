@@ -1,0 +1,21 @@
+{{#extends "base"}}
+
+{{#block "title"}}
+Create Specialty
+{{/block}}
+
+
+{{#block "content"}}
+<h2>Create Specialty</h2>
+<form method="post">
+    <div>
+        <label>Specialty Name:</label>
+        <input type="text" name="name" id="name" class="form-control">
+    </div>
+    
+    <a href="/doctors" class="btn btn-warning">Cancel</a>
+    <input type="submit" value="Create Specialty" class="btn btn-primary my-4">
+</form>
+{{/block}}
+
+{{/extends}}

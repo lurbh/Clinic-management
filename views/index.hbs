@@ -1,0 +1,54 @@
+{{#extends "base"}}
+
+{{#block "title"}}
+Home
+{{/block}}
+
+
+{{#block "content"}}
+<h1>Welcome to Our Clinic Management System</h1>
+<div class="container">
+    <div class="row my-4">
+        <div class="col-sm-6 mb-3 mb-sm-0">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Clinic Management</h5>
+                    <p class="card-text">Edit Existing Clinics and Add New Clinics</p>
+                    <a href="/clinics" class="btn btn-primary">Enter Clinic Management</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 mb-3 mb-sm-0">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Manage Appointments</h5>
+                    <p class="card-text">Effortlessly book, view, and manage appointments with our intuitive system. </p>
+                    <a href="/appointments" class="btn btn-primary">Enter Appointment Management</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row my-4">
+        <div class="col-sm-6 mb-3 mb-sm-0">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Patient Management</h5>
+                    <p class="card-text">Seamlessly handle patient information within our appointment app. Access and update patient records, and tailor care plans—all in one place.</p>
+                    <a href="/patients" class="btn btn-primary">Enter Patient Management</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 mb-3 mb-sm-0">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Doctor Management</h5>
+                    <p class="card-text">Effortlessly organize and manage your team of healthcare professionals with our doctor management system.</p>
+                    <a href="/doctors" class="btn btn-primary">Enter Doctor Management</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{/block}}
+
+{{/extends}}
