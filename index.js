@@ -57,10 +57,16 @@ async function main()
 
     app.get('/clinics', async function(req,res)
     {
-        let [clinics] = await connection.execute(`SELECT * FROM Clinic;`);
+        const {search} = req.query;
+        let [clinics] = !search?await connection.execute(`SELECT * FROM Clinic;`):await connection.execute(`SELECT * FROM Clinic WHERE name LIKE ?;`, [`%${search}%`]);
         res.render('clinics/index', {
             clinics
         });
+    });
+
+    app.post("/clinics", async function (req,res){
+        const {search} = req.body;
+        res.redirect(`/clinics?search=${search}`)
     });
 
     app.get('/clinics/schedule/:schedule_id', async function(req,res)
@@ -175,20 +181,54 @@ async function main()
     });
 
     app.get("/appointments", async function (req,res){
-        const [appointments] = await connection.execute(`SELECT appointment_id,Patient.name AS P_name, Doctor.name AS D_name, Appointment_Type.name AS apt_name, Clinic.name AS C_name,
+        const {p_id,d_id,at_id,c_id} = req.query;
+        let searchquery = `WHERE `;
+        let queryArray = [];
+        if(p_id)
+            queryArray.push(`Appointment.patient_id = ${p_id}`);
+        if(d_id)
+            queryArray.push(`Appointment.doctor_id = ${d_id}`);
+        if(at_id)
+            queryArray.push(`Appointment.appt_type_id = ${at_id}`);
+        if(c_id)
+            queryArray.push(`Doctor.clinic_id = ${c_id}`);
+        for (let index = 0; index < queryArray.length; index++) {
+            searchquery = searchquery + queryArray[index];
+            if(index != queryArray.length - 1)
+                searchquery = searchquery + " AND "
+        }
+        const [appointments] = !queryArray.length?await connection.execute(`SELECT appointment_id,Patient.name AS P_name, Doctor.name AS D_name, Appointment_Type.name AS apt_name, Clinic.name AS C_name,
         DATE(datetime) AS date,TIME(datetime) AS time FROM Appointment 
         INNER JOIN Patient ON Appointment.patient_id = Patient.patient_id
         INNER JOIN Doctor ON Appointment.doctor_id = Doctor.doctor_id
         INNER JOIN Appointment_Type ON Appointment.appt_type_id = Appointment_Type.appt_type_id
-        INNER JOIN Clinic on Doctor.clinic_id = Clinic.clinic_id;`);
+        INNER JOIN Clinic on Doctor.clinic_id = Clinic.clinic_id;`):await connection.execute(`SELECT appointment_id,Patient.name AS P_name, Doctor.name AS D_name, Appointment_Type.name AS apt_name, Clinic.name AS C_name,
+        DATE(datetime) AS date,TIME(datetime) AS time FROM Appointment 
+        INNER JOIN Patient ON Appointment.patient_id = Patient.patient_id
+        INNER JOIN Doctor ON Appointment.doctor_id = Doctor.doctor_id
+        INNER JOIN Appointment_Type ON Appointment.appt_type_id = Appointment_Type.appt_type_id
+        INNER JOIN Clinic on Doctor.clinic_id = Clinic.clinic_id ${searchquery};`);
+        const [patients] = await connection.execute(`SELECT * FROM Patient;`);
+        const [doctors] = await connection.execute(`SELECT * FROM Doctor;`);
+        const [appt_types] = await connection.execute(`SELECT * FROM Appointment_Type;`);
+        const [clinics] = await connection.execute("SELECT * FROM Clinic");
         for(const apt of appointments)
         {
             apt.time = setAMPMTime(apt.time);
             apt.date = apt.date.toISOString().substring(0, 10);
         }
         res.render("appointments/index", {
-            appointments
+            appointments,
+            patients,
+            doctors,
+            appt_types,
+            clinics
         });
+    });
+
+    app.post("/appointments", async function (req,res){
+        const {patient_id,doctor_id,appt_type_id,clinic_id} = req.body;
+        res.redirect(`/appointments?p_id=${patient_id}&d_id=${doctor_id}&at_id=${appt_type_id}&c_id=${clinic_id}`);
     });
 
     app.get("/appointments/create", async function (req,res){
@@ -266,12 +306,22 @@ async function main()
     });
 
     app.get("/doctors", async function (req,res){
-        const [doctors] = await connection.execute(`SELECT Doctor.doctor_id, Doctor.name as D_name, Clinic.name AS C_name FROM Doctor 
+        const {search} = req.query;
+        const [doctors] = !search?await connection.execute(`SELECT Doctor.doctor_id, Doctor.name as D_name, Clinic.name AS C_name FROM Doctor 
         INNER JOIN Clinic ON Doctor.clinic_id = Clinic.clinic_id
-        ORDER BY Clinic.clinic_id;`)
+        ORDER BY Clinic.clinic_id;`):await connection.execute(`SELECT Doctor.doctor_id, Doctor.name as D_name, Clinic.name AS C_name FROM Doctor 
+        INNER JOIN Clinic ON Doctor.clinic_id = Clinic.clinic_id WHERE Doctor.clinic_id = ?
+        ORDER BY Clinic.clinic_id;`,[search]);
+        const [clinics] = await connection.execute("SELECT * FROM Clinic");
         res.render("doctors/index", {
-            doctors
+            doctors,
+            clinics
         });
+    });
+
+    app.post("/doctors", async function (req,res){
+        const {clinic_id} = req.body;
+        res.redirect(`/doctors?search=${clinic_id}`)
     });
 
     app.get("/doctors/specialty", async function (req,res){
@@ -369,10 +419,16 @@ async function main()
     });
 
     app.get("/patients", async function (req,res){
-        const [patients] = await connection.execute(`SELECT * FROM Patient;`)
+        const {search} = req.query;
+        const [patients] = !search?await connection.execute(`SELECT * FROM Patient;`):await connection.execute(`SELECT * FROM Patient WHERE name LIKE ?;`, [`%${search}%`]);
         res.render("patients/index", {
             patients
         });
+    });
+
+    app.post("/patients", async function (req,res){
+        const {search} = req.body;
+        res.redirect(`/patients?search=${search}`)
     });
 
     app.get("/patients/create", async function (req,res){
@@ -380,6 +436,7 @@ async function main()
     });
 
     app.post("/patients/create", async function (req,res){
+        console.log(req.body);
         const {name,phone,email} = req.body;
         let doctorquery = `INSERT INTO Patient (name, phone, email) VALUES(?, ?, ?)`;
         const response = await connection.execute(doctorquery,[name, phone, email]);
