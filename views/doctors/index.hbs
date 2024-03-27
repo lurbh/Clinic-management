@@ -30,6 +30,7 @@ Doctors
         <thead>
             <th>Doctor Name</th>
             <th>Clinic</th>
+            <th>Specialties</th>
             <th></th>
             <th></th>
         </thead>
@@ -38,6 +39,7 @@ Doctors
             <tr>
                 <td>{{this.D_name}}</td>
                 <td>{{this.C_name}}</td>
+                <td>{{this.Specialties}}</td>
                 <td><a href="/doctors/edit/{{this.doctor_id}}" class="btn btn-warning">Edit</a></td>
                 <td><a href="/doctors/delete/{{this.doctor_id}}" class="btn btn-danger">Delete</a></td>
             </tr>

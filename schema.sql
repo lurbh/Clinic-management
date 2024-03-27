@@ -2,7 +2,7 @@ CREATE DATABASE Clinic_Management;
 
 USE Clinic_Management;
 
-CREATE TABLE Patient
+CREATE TABLE Patients
 (
   patient_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE Patient
   PRIMARY KEY (patient_id)
 );
 
-CREATE TABLE Schedule
+CREATE TABLE Schedules
 (
   schedule_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   weekday_start TIME NOT NULL,
@@ -25,21 +25,21 @@ CREATE TABLE Schedule
   PRIMARY KEY (schedule_id)
 );
 
-CREATE TABLE Specialty
+CREATE TABLE Specialties
 (
   specialty_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   PRIMARY KEY (specialty_id)
 );
 
-CREATE TABLE Appointment_Type
+CREATE TABLE AppointmentTypes
 (
   appt_type_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   PRIMARY KEY (appt_type_id)
 );
 
-CREATE TABLE Clinic
+CREATE TABLE Clinics
 (
   clinic_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
@@ -51,19 +51,19 @@ CREATE TABLE Clinic
   email VARCHAR(155) NOT NULL,
   schedule_id INT UNSIGNED NOT NULL,
   PRIMARY KEY (clinic_id),
-  FOREIGN KEY (schedule_id) REFERENCES Schedule(schedule_id)
+  FOREIGN KEY (schedule_id) REFERENCES Schedules(schedule_id)
 );
 
-CREATE TABLE Doctor
+CREATE TABLE Doctors
 (
   doctor_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   clinic_id INT UNSIGNED NOT NULL,
   PRIMARY KEY (doctor_id),
-  FOREIGN KEY (clinic_id) REFERENCES Clinic(clinic_id)
+  FOREIGN KEY (clinic_id) REFERENCES Clinics(clinic_id)
 );
 
-CREATE TABLE Appointment
+CREATE TABLE Appointments
 (
   appointment_id INT UNSIGNED AUTO_INCREMENT NOT NULL,
   datetime DATETIME NOT NULL,
@@ -71,16 +71,16 @@ CREATE TABLE Appointment
   doctor_id INT UNSIGNED NOT NULL,
   appt_type_id INT UNSIGNED NOT NULL,
   PRIMARY KEY (appointment_id),
-  FOREIGN KEY (patient_id) REFERENCES Patient(patient_id),
-  FOREIGN KEY (doctor_id) REFERENCES Doctor(doctor_id),
-  FOREIGN KEY (appt_type_id) REFERENCES Appointment_Type(appt_type_id)
+  FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
+  FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id),
+  FOREIGN KEY (appt_type_id) REFERENCES AppointmentTypes(appt_type_id)
 );
 
-CREATE TABLE DoctorSpecialty
+CREATE TABLE Doctors_Specialties
 (
   doctor_id INT UNSIGNED NOT NULL,
   specialty_id INT UNSIGNED NOT NULL,
   PRIMARY KEY (doctor_id, specialty_id),
-  FOREIGN KEY (doctor_id) REFERENCES Doctor(doctor_id),
-  FOREIGN KEY (specialty_id) REFERENCES Specialty(specialty_id)
+  FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id),
+  FOREIGN KEY (specialty_id) REFERENCES Specialties(specialty_id)
 );
