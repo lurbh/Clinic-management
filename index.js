@@ -64,11 +64,6 @@ async function main()
         });
     });
 
-    app.post("/clinics", async function (req,res){
-        const {search} = req.body;
-        res.redirect(`/clinics?search=${search}`)
-    });
-
     app.get('/clinics/schedule/:schedule_id', async function(req,res)
     {
         const {schedule_id} = req.params;
@@ -181,17 +176,17 @@ async function main()
     });
 
     app.get("/appointments", async function (req,res){
-        const {p_id,d_id,at_id,c_id} = req.query;
+        const {patient_id,doctor_id,appt_type_id,clinic_id} = req.query;
         let searchquery = `WHERE `;
         let queryArray = [];
-        if(p_id)
-            queryArray.push(`Appointments.patient_id = ${p_id}`);
-        if(d_id)
-            queryArray.push(`Appointments.doctor_id = ${d_id}`);
-        if(at_id)
-            queryArray.push(`Appointments.appt_type_id = ${at_id}`);
-        if(c_id)
-            queryArray.push(`Doctors.clinic_id = ${c_id}`);
+        if(patient_id)
+            queryArray.push(`Appointments.patient_id = ${patient_id}`);
+        if(doctor_id)
+            queryArray.push(`Appointments.doctor_id = ${doctor_id}`);
+        if(appt_type_id)
+            queryArray.push(`Appointments.appt_type_id = ${appt_type_id}`);
+        if(clinic_id)
+            queryArray.push(`Doctors.clinic_id = ${clinic_id}`);
         for (let index = 0; index < queryArray.length; index++) {
             searchquery = searchquery + queryArray[index];
             if(index != queryArray.length - 1)
@@ -308,8 +303,8 @@ async function main()
     });
 
     app.get("/doctors", async function (req,res){
-        const {search} = req.query;
-        const [doctors] = !search?await connection.execute(`
+        const {clinic_id} = req.query;
+        const [doctors] = !clinic_id?await connection.execute(`
         SELECT Doctors.doctor_id, Doctors.name as D_name, Clinics.name AS C_name, GROUP_CONCAT(Specialties.name SEPARATOR ', ') AS Specialties FROM Doctors 
         JOIN Clinics ON Doctors.clinic_id = Clinics.clinic_id 
         JOIN Doctors_Specialties ON Doctors.doctor_id = Doctors_Specialties.doctor_id 
@@ -322,17 +317,12 @@ async function main()
         JOIN Specialties ON Doctors_Specialties.specialty_id = Specialties.specialty_id 
         WHERE Doctors.clinic_id = ? 
         GROUP BY Doctors.doctor_id 
-        ORDER BY Clinics.clinic_id;`,[search]);
+        ORDER BY Clinics.clinic_id;`,[clinic_id]);
         const [clinics] = await connection.execute("SELECT * FROM Clinics");
         res.render("doctors/index", {
             doctors,
             clinics
         });
-    });
-
-    app.post("/doctors", async function (req,res){
-        const {clinic_id} = req.body;
-        res.redirect(`/doctors?search=${clinic_id}`)
     });
 
     app.get("/doctors/specialty", async function (req,res){
@@ -435,11 +425,6 @@ async function main()
         res.render("patients/index", {
             patients
         });
-    });
-
-    app.post("/patients", async function (req,res){
-        const {search} = req.body;
-        res.redirect(`/patients?search=${search}`)
     });
 
     app.get("/patients/create", async function (req,res){
